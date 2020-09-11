@@ -18,7 +18,7 @@
         "loadash": "^1.0.0",
         "memorystream": "^0.3.1",
         "node-forge": "^0.9.1",
-        "symbol-sdk": "^0.20.8-alpha-202008211131",
+        "symbol-sdk": "^0.20.8-alpha-202009111316",
         "tslib": "^1.13.0",
         "utf8": "^2.1.2",
         "winston": "^3.3.3"
