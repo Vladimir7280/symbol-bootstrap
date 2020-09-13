@@ -258,10 +258,11 @@ export class ConfigService {
             harvesterSigningPrivateKey: account.signing.privateKey,
             harvesterVrfPrivateKey: account.vrf.privateKey,
         };
-        const templateContext: any = { ...presetData, ...generatedContext, ...nodePreset };
+        const templateContext = { ...presetData, ...generatedContext, ...nodePreset };
         await BootstrapUtils.generateConfiguration(templateContext, copyFrom, outputFolder);
         await this.generateP2PFile(presetData, addresses, outputFolder, NodeType.PEER_NODE, 'peers-p2p.json');
         await this.generateP2PFile(presetData, addresses, outputFolder, NodeType.API_NODE, 'peers-api.json');
+        await new VotingService(this.params).run(presetData, account, nodePreset);
     }
 
     private async generateP2PFile(
@@ -379,7 +380,6 @@ export class ConfigService {
         }
 
         await BootstrapUtils.generateConfiguration(templateContext, copyFrom, moveTo);
-        await new VotingService(this.root, this.params).run(addresses, presetData);
         await new NemgenService(this.root, this.params).run(presetData);
     }
 
@@ -401,8 +401,8 @@ export class ConfigService {
         const voting = VotingKeyLinkTransaction.create(
             deadline,
             votingKey,
-            UInt64.fromUint(1),
-            UInt64.fromUint(26280),
+            1,
+            26280,
             LinkAction.Link,
             presetData.networkType,
             UInt64.fromUint(0),
@@ -428,7 +428,7 @@ export class ConfigService {
                     restPrivateKey: account.privateKey,
                 };
                 const gatewayPreset = (presetData.gateways || [])[index];
-                const templateContext: any = { ...presetData, ...generatedContext, ...gatewayPreset };
+                const templateContext = { ...presetData, ...generatedContext, ...gatewayPreset };
                 const name = templateContext.name || `rest-gateway-${index}`;
                 const moveTo = `${this.params.target}/config/${name}`;
                 return BootstrapUtils.generateConfiguration(templateContext, copyFrom, moveTo);
