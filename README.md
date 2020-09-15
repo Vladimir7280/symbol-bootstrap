@@ -61,7 +61,7 @@ Presets are defined at 4 levels from general to specific:
 -   Assembly: It defines a modification of a network, example: `testnet peer`, `tesnet dual`, `testnet api`. Assembly is required for some networks (like `testnet`).
 -   Custom: A user provided yml file (`--customPreset` param) that could override some or all properties in the out-of-the-box presets.
 
-Properties in each file override the previous values (by shallow object merge).
+Properties in each file override the previous values (by object deep merge).
 
 ### Out-of-the-box presets:
 
@@ -70,6 +70,65 @@ Properties in each file override the previous values (by shallow object merge).
 -   `-p testnet -a peer`: A [haversting](https://github.com/nemtech/symbol-bootstrap/blob/main/presets/testnet/assembly-peer.yml) peer node that connects to the current public [testnet](https://github.com/nemtech/symbol-bootstrap/blob/main/presets/testnet/network.yml). [Nemesis block](https://github.com/nemtech/symbol-bootstrap/tree/main/presets/testnet/seed/00000) is copied over.
 -   `-p testnet -a api`: A [api](https://github.com/nemtech/symbol-bootstrap/blob/main/presets/testnet/assembly-api.yml) peer node that connects to the current public [testnet](https://github.com/nemtech/symbol-bootstrap/blob/main/presets/testnet/network.yml) running its own mongo database and rest gateway. [Nemesis block](https://github.com/nemtech/symbol-bootstrap/tree/main/presets/testnet/seed/00000) is copied over.
 -   `-p testnet -a dual`: A [dual](https://github.com/nemtech/symbol-bootstrap/blob/main/presets/testnet/assembly-dual.yml) haversting peer node that connects to the current public [testnet](https://github.com/nemtech/symbol-bootstrap/blob/main/presets/testnet/network.yml) running its own mongo database and rest gateway. [Nemesis block](https://github.com/nemtech/symbol-bootstrap/tree/main/presets/testnet/seed/00000) is copied over.
+
+
+### Custom preset:
+
+It's the way you can tune the network without modifying the code. It's a yml file (`--customPreset` param) that could override some or all properties in the out-of-the-box presets.
+
+Most people would use the out-of-box preset or tune a few attributes.
+
+The file a hierarchical yaml object. If an attribute is defined at root level, it overrides the default value for all the affected configurations. 
+The attribute can also be defined in a lower level object just affecting one component (node, gateway, nemesis, etc).  
+
+The best way to validate your configuration if by inspecting the generated configuration and preset.yml files in the target folder
+
+**Examples:**
+
+Custom reset image and throttling:
+
+````
+symbolRestImage: symbolplatform/symbol-rest:1.3.1-alpha
+throttlingBurst: 35
+throttlingRate: 1000
+````
+
+Custom number of nemesis accounts:
+
+````
+nemesis:
+  mosaics:
+    - accounts: 20
+````
+
+Zero fee nodes:
+
+````
+minFeeMultiplier: 0
+````
+
+Not exposed rest gateway:
+
+````
+gateways:
+    - openPort: false
+````
+
+Custom generation hash seed, balances and block 1 transactions:
+
+````
+nemesisGenerationHashSeed: 7391E2EF993C70D2F52691A54411DA3BD1F77CF6D47B8C8D8832C890069AAAAA
+nemesis:
+    balances:
+        TDN2CNADENSTASFK6SCB7MFQLAYNZB3JBZCBLLA: 898300000
+        TBK7C5SI3NR3ZEZTMNXRISY6FENDK3YDE63HK7Q: 98800000
+        TA45K3WZYQQKSFHJ3DSEQTOO6N7RMBQUVE7H6MA: 984750000
+transactions:
+        '16963_581474': A1000000000000...(serialized hex transaction)
+        '16963_580690': A1000000000000...
+        'MyTransaction': 01000000000000...
+````
+
 
 ## Target:
 
@@ -108,7 +167,7 @@ $ npm install -g symbol-bootstrap
 $ symbol-bootstrap COMMAND
 running command...
 $ symbol-bootstrap (-v|--version|version)
-symbol-bootstrap/0.0.0 linux-x64 node-v14.8.0
+symbol-bootstrap/0.0.0 linux-x64 node-v12.16.3
 $ symbol-bootstrap --help [COMMAND]
 USAGE
   $ symbol-bootstrap COMMAND
