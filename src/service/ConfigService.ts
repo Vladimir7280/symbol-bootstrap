@@ -36,6 +36,7 @@ export interface ConfigParams {
     reset: boolean;
     preset: Preset;
     target: string;
+    user: string;
     assembly?: string;
     customPreset?: string;
 }
@@ -48,7 +49,12 @@ export interface ConfigResult {
 const logger: Logger = LoggerFactory.getLogger(LogType.System);
 
 export class ConfigService {
-    public static defaultParams: ConfigParams = { target: 'target', preset: Preset.bootstrap, reset: false };
+    public static defaultParams: ConfigParams = {
+        target: 'target',
+        preset: Preset.bootstrap,
+        reset: false,
+        user: BootstrapUtils.CURRENT_USER,
+    };
 
     constructor(private readonly root: string, private readonly params: ConfigParams) {}
 

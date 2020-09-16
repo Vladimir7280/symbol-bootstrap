@@ -1,6 +1,5 @@
 import { Command, flags } from '@oclif/command';
-import { BootstrapUtils, ConfigService, Preset } from '../service';
-import { BootstrapService } from '../service/BootstrapService';
+import { BootstrapService, BootstrapUtils, ConfigService, Preset } from '../service';
 
 export default class Config extends Command {
     static description = 'Command used to set up the configuration files and the nemesis block for the current network';
@@ -33,6 +32,11 @@ export default class Config extends Command {
             char: 'r',
             description: 'It resets the configuration generating a new one',
             default: ConfigService.defaultParams.reset,
+        }),
+        user: flags.string({
+            char: 'u',
+            description: `User used to run docker images when creating configuration files like certificates or nemesis block. "${BootstrapUtils.CURRENT_USER}" means the current user.`,
+            default: BootstrapUtils.CURRENT_USER,
         }),
     };
 

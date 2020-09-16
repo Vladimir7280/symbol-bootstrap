@@ -25,7 +25,7 @@ export class NemgenService {
         const cmd = [
             'bash',
             '-c',
-            'cd /data && /usr/catapult/bin/catapult.tools.nemgen  -r /userconfig --nemesisProperties /nemesis/block-properties-file.properties',
+            'cd /data && /usr/catapult/bin/catapult.tools.nemgen  -r /userconfig --nemesisProperties /nemesis/block-properties-file.properties && rm -rf statedb',
         ];
 
         if (!presetData.nodes) {
@@ -40,18 +40,13 @@ export class NemgenService {
             `${dir}/data/nemesis-data:/data:rw`,
         ];
 
-        const stdout = await BootstrapUtils.runImageUsingExec(
-            symbolServerToolsImage,
-            await BootstrapUtils.getDockerUserGroup(),
-            cmd,
-            binds,
-        );
+        const userId = await BootstrapUtils.resolveDockerUserFromParam(this.params.user);
+        const stdout = await BootstrapUtils.runImageUsingExec(symbolServerToolsImage, userId, cmd, binds);
 
         if (stdout.indexOf('<error> ') > -1) {
             logger.info(stdout);
             throw new Error('Nemgen failed. Check the logs!');
         }
-        await BootstrapUtils.deleteFolder(`${dir}/data/nemesis-data/statedb`);
         logger.info('Nemgen executed!!!!');
     }
 }
